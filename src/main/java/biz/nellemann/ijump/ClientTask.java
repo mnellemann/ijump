@@ -45,8 +45,9 @@ public class ClientTask extends Task<Void> {
 
             clientConnection.portForwards().forEach( (localPort, remotePort) -> {
                 try {
+                    SshdSocketAddress localSocket = new SshdSocketAddress("localhost", localPort);
                     SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.privateHost(), remotePort);
-                    session.startLocalPortForwarding(localPort, remoteSocket);
+                    session.startLocalPortForwarding(localSocket, remoteSocket);
                 } catch (IOException e) {
                     log.warn(e.getMessage());
                 }
@@ -55,29 +56,14 @@ public class ClientTask extends Task<Void> {
 
             session.setSessionHeartbeat(SessionHeartbeatController.HeartbeatType.IGNORE, Duration.ofMinutes(1));
 
-            isCancelled()
-
-            try (ClientChannel channel = session.createShellChannel(/* use internal defaults */)) {
-                try {
-                    channel.setRedirectErrorStream(true);
-                    channel.open().verify(1000);
-
-                    //spawnStdinThread(channel.getInvertedIn());
-                    //spawnCombinedOutputThread(channel.getInvertedOut());
-
-                    // Wait (forever) for the channel to close - signalling shell exited
-                    channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 0L);
-                } finally {
-                    // ... stop the pumping threads ...
-                }
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-       /* while(isRunning()) {
+        while(!isCancelled()) {
             Thread.sleep(500);
-        }*/
+        }
+
         return null;
     }
 

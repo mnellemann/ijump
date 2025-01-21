@@ -44,7 +44,7 @@ public class Main extends javafx.application.Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        primaryStage.setTitle("iJump");
+        primaryStage.setTitle("iJump - IBM i Cloud Connect");
         primaryStage.setScene(scene);
         primaryStage.show();
 

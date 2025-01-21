@@ -104,8 +104,7 @@ public class MainController {
 
     @FXML
     protected void onStopButtonClick() {
-        clientTask.isRunning();
-        clientTask.cancel();
+        clientTask.cancel(true);
         btnStart.disableProperty().setValue(false);
         btnStop.disableProperty().setValue(true);
     }
