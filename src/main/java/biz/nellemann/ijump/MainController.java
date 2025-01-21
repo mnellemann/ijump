@@ -1,23 +1,11 @@
 package biz.nellemann.ijump;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.sshd.client.SshClient;
-import org.apache.sshd.client.channel.ClientChannel;
-import org.apache.sshd.client.channel.ClientChannelEvent;
-import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.util.net.SshdSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javafx.scene.control.PasswordField;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -56,7 +44,7 @@ public class MainController {
 
 
     @FXML
-    public void initialize() throws Exception {
+    public void initialize() {
         PrintStream printStream = new PrintStream(new MyCustomAppender(textAreaLog));
         System.setOut(printStream);
         System.setErr(printStream);
@@ -88,6 +76,7 @@ public class MainController {
         mapOfPortsToForward.put(9474, 9474);
         mapOfPortsToForward.put(9475, 9475);
         mapOfPortsToForward.put(9476, 9476);
+        mapOfPortsToForward.put(50000, 23);
     }
 
 

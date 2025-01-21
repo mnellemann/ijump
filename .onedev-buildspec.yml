@@ -1,0 +1,24 @@
+version: 38
+imports:
+- projectPath: common/java/gradle-javafx
+  revision: main
+jobs:
+- name: Github
+  jobExecutor: Linux
+  steps:
+  - !PushRepository
+    name: push
+    remoteUrl: https://github.com/mnellemann/ijump.git
+    passwordSecret: GITHUB-TOKEN
+    force: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !TagCreateTrigger
+    branches: main
+  jobDependencies:
+  - jobName: Test JavaFX App
+    requireSuccessful: true
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 14400
