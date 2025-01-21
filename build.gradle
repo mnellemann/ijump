@@ -1,0 +1,121 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.javamodularity.moduleplugin' version '1.8.15'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.google.osdetector' version '1.7.3'
+    id 'org.beryx.runtime' version '1.13.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainModule = 'biz.nellemann.ijump'
+    mainClass = 'biz.nellemann.ijump.Main'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    modularity.inferModulePath.set(false)
+}
+
+javafx {
+    version = '21+'
+    modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml' ]
+}
+
+dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.13'
+    implementation 'org.slf4j:slf4j-simple:2.0.13'
+    implementation 'org.apache.sshd:sshd-core:2.14.0'
+    implementation 'org.kordamp.ikonli:ikonli-javafx:12.3.1'
+    implementation 'org.kordamp.ikonli:ikonli-fontawesome5-pack:12.3.1'
+    implementation 'io.github.mkpaz:atlantafx-base:2.0.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+runtime {
+    options = [ '--strip-debug', '--no-header-files', '--no-man-pages' ]
+    modules = [
+        'java.security.jgss',
+        'java.desktop',
+        'java.scripting',
+        'java.logging',
+        'java.management',
+        'jdk.jfr',
+        'jdk.unsupported',
+        'jdk.crypto.cryptoki',
+        'javafx.base',
+        'javafx.fxml',
+        'javafx.graphics',
+        'javafx.controls'
+    ]
+
+
+    launcher {
+        noConsole = true
+    }
+
+    // Only works with Java 14 (and later)
+    jpackage {
+        imageName = "iJump"
+        skipInstaller = true
+        installerName = "iJump-${osdetector.arch}"
+        installerOptions += [
+            '--vendor', 'Nellemann Data',
+            '--description', 'IBM i SSH Tunneling Through Jump Host',
+            '--copyright', 'Mark Nellemann <mark.nellemann@gmail.com>',
+            '--app-version', project.findProperty('version'),
+        ]
+
+        // Requires: https://wixtoolset.org/ to create installer on Windows
+        if(osdetector.os == 'windows') {
+            installerType = 'msi'
+            skipInstaller = false
+            installerOptions += [
+                '--win-per-user-install',
+                '--win-dir-chooser',
+                '--win-menu',
+               //'--icon', 'src/main/resources/icon.png'
+            ]
+        }
+
+        // Requires: xcode-select --install
+        if(osdetector.os == 'osx') {
+            installerType = 'dmg'
+            skipInstaller = false
+            installerOptions += [
+                //'--icon', 'src/main/resources/icon.icns'
+            ]
+        }
+
+        // Requires: build-rpm / rpm and dpkg-dev
+        if(osdetector.os == 'linux') {
+            skipInstaller = false
+            installerOptions += [
+                '--linux-shortcut',
+                '--linux-menu-group', 'Internet',
+                '--linux-rpm-license-type', 'APACHE-20',
+                '--linux-deb-maintainer', 'mark.nellemann@gmail.com',
+                //'--icon', 'src/main/resources/icon.png',
+            ]
+        }
+
+    }
+
+}

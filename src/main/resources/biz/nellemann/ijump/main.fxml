@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/17.0.9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biz.nellemann.ijump.MainController" prefWidth="800" prefHeight="360">
+
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+    </padding>
+
+    <opaqueInsets>
+        <Insets />
+    </opaqueInsets>
+
+    <left>
+        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <Label text="Configuration">
+                <font>
+                    <Font name="System Bold" size="15.0"/>
+                </font>
+            </Label>
+
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Public Jump Server">
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="publicHost" text="161.156.136.35" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Internal Address">
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="remoteHost" text="192.168.217.35" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Username">
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </Label>
+                <TextField fx:id="username" text="larsj" />
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT" spacing="5.0">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Password">
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </Label>
+                <PasswordField fx:id="password" text="iPerformance2025" />
+            </HBox>
+
+
+            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="15.0">
+                <children>
+                    <!-- Spacer -->
+                </children>
+            </HBox>
+
+            <HBox alignment="TOP_RIGHT" spacing="5.0">
+                <Button id="button-start" fx:id="btnStart" onAction="#onButtonStart" text="_Start Tunnel">
+                    <graphic>
+                        <FontIcon iconLiteral="far-play-circle" iconSize="24" />
+                    </graphic>
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </HBox.margin>
+                </Button>
+
+                <Button id="button-stop" fx:id="btnStop" disable="true" onAction="#onStopButtonClick" text="S_top Tunnel">
+                    <graphic>
+                        <FontIcon iconLiteral="far-stop-circle" iconSize="24" />
+                    </graphic>
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" top="10.0" />
+                    </HBox.margin>
+                </Button>
+
+            </HBox>
+
+        </VBox>
+    </left>
+
+    <center>
+        <TextArea fx:id="textAreaLog" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="400.0" promptText="Server log goes here ..." scrollLeft="2.0" scrollTop="2.0" wrapText="true">
+            <font>
+                <Font size="12.0" />
+            </font>
+        </TextArea>
+    </center>
+
+</BorderPane>
