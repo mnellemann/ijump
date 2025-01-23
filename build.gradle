@@ -41,9 +41,6 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.13'
     implementation 'org.apache.sshd:sshd-core:2.14.0'
     implementation 'io.github.mkpaz:atlantafx-base:2.0.1'
-    implementation 'jakarta.annotation:jakarta.annotation-api:3.0.0'
-    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
-
 }
 
 test {
@@ -64,7 +61,9 @@ runtime {
         'javafx.base',
         'javafx.fxml',
         'javafx.graphics',
-        'javafx.controls'
+        'javafx.controls',
+        'java.rmi'
+
     ]
 
 
