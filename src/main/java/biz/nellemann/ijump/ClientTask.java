@@ -43,9 +43,7 @@ public class ClientTask extends Task<Boolean> {
                     SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.privateHost(), remotePort);
                     session.startLocalPortForwarding(localSocket, remoteSocket);
                 } catch (IOException e) {
-                    updateMessage(e.getMessage());
-                    updateValue(false);
-                    log.warn(e.getMessage());
+                    log.debug("Port forwarding {} to {} on {} - {}", localPort, clientConnection.privateHost(), remotePort, e.getMessage());
                 }
             });
 
@@ -59,8 +57,10 @@ public class ClientTask extends Task<Boolean> {
 
         } catch (Exception e) {
             updateMessage(e.getMessage());
+            cancel();
         }
 
+        updateMessage("");
         return null;
     }
 

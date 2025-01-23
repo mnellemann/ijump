@@ -1,8 +1,8 @@
 package biz.nellemann.ijump;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
@@ -45,6 +45,10 @@ public class MainController {
     @FXML
     private Label labelMessage;
 
+    @FXML
+    private TextArea syslog;
+
+
     private final Map<Integer, Integer> mapOfPortsToForward = new HashMap<>();
 
     private ClientTask clientTask;
@@ -52,9 +56,11 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        //PrintStream printStream = new PrintStream(new MyCustomAppender(textAreaLog));
-        //System.setOut(printStream);
-        //System.setErr(printStream);
+        PrintStream printStream = new PrintStream(new MyCustomAppender(syslog));
+        System.setOut(printStream);
+        System.setErr(printStream);
+
+        progress.visibleProperty().setValue(false);
 
         mapOfPortsToForward.put(23, 23);
         mapOfPortsToForward.put(446, 446);
@@ -89,6 +95,7 @@ public class MainController {
         publicHost.setText(configurationService.get("publicHost", ""));
         remoteHost.setText(configurationService.get("privateHost", ""));
         username.setText(configurationService.get("username", ""));
+        password.setText(configurationService.get("password", ""));
         publicKey.setText(configurationService.get("publicKey", ""));
 
         publicHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -112,6 +119,13 @@ public class MainController {
             }
         });
 
+        password.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                configurationService.put("password", password.getText());
+            }
+        });
+
         publicKey.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -124,23 +138,31 @@ public class MainController {
 
     @FXML
     protected void onButtonStart() {
+        syslog.setText("");
         ClientConnection connection = new ClientConnection(publicHost.getText(), username.getText(), password.getText(), publicKey.getText(), remoteHost.getText(), mapOfPortsToForward);
         clientTask = new ClientTask(connection);
 
         progress.selectedProperty().bind(clientTask.runningProperty());
         labelMessage.textProperty().bind(clientTask.messageProperty());
 
+        clientTask.setOnCancelled(e -> {
+            labelMessage.textProperty().unbind();
+            stop();
+        });
+
         clientTask.setOnFailed(e -> {
-            log.warn("Failed.");
-            onButtonStop();
+            labelMessage.textProperty().unbind();
+            stop();
         });
 
         clientTask.setOnSucceeded(e -> {
-            log.warn("Succeeded.");
-            onButtonStop();
+
+            labelMessage.textProperty().unbind();
+            stop();
         });
 
         new Thread(clientTask).start();
+        progress.visibleProperty().setValue(true);
         btnStart.disableProperty().setValue(true);
         btnStop.disableProperty().setValue(false);
     }
@@ -149,11 +171,14 @@ public class MainController {
     @FXML
     protected void onButtonStop() {
         clientTask.cancel(true);
-        labelMessage.textProperty().unbind();
+        stop();
         labelMessage.setText("");
-        btnStart.disableProperty().setValue(false);
-        btnStop.disableProperty().setValue(true);
     }
 
+    private void stop() {
+        btnStart.disableProperty().setValue(false);
+        btnStop.disableProperty().setValue(true);
+        progress.visibleProperty().setValue(false);
+    }
 
 }
