@@ -1,20 +1,21 @@
 package biz.nellemann.ijump;
 
-import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.scene.control.PasswordField;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 
 
 public class MainController {
 
     private final static Logger log = LoggerFactory.getLogger(MainController.class);
+
+    ConfigurationService configurationService = new ConfigurationService();
 
 
     @FXML
@@ -30,13 +31,19 @@ public class MainController {
     private PasswordField password;
 
     @FXML
+    private TextArea publicKey;
+
+    @FXML
     private Button btnStart;
 
     @FXML
     private Button btnStop;
 
     @FXML
-    public TextArea textAreaLog;
+    private CheckBox progress;
+
+    @FXML
+    private Label labelMessage;
 
     private final Map<Integer, Integer> mapOfPortsToForward = new HashMap<>();
 
@@ -45,9 +52,9 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        PrintStream printStream = new PrintStream(new MyCustomAppender(textAreaLog));
-        System.setOut(printStream);
-        System.setErr(printStream);
+        //PrintStream printStream = new PrintStream(new MyCustomAppender(textAreaLog));
+        //System.setOut(printStream);
+        //System.setErr(printStream);
 
         mapOfPortsToForward.put(23, 23);
         mapOfPortsToForward.put(446, 446);
@@ -77,14 +84,62 @@ public class MainController {
         mapOfPortsToForward.put(9475, 9475);
         mapOfPortsToForward.put(9476, 9476);
         mapOfPortsToForward.put(50000, 23);
+
+
+        publicHost.setText(configurationService.get("publicHost", ""));
+        remoteHost.setText(configurationService.get("privateHost", ""));
+        username.setText(configurationService.get("username", ""));
+        publicKey.setText(configurationService.get("publicKey", ""));
+
+        publicHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                configurationService.put("publicHost", publicHost.getText());
+            }
+        });
+
+        remoteHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                configurationService.put("privateHost", remoteHost.getText());
+            }
+        });
+
+        username.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                configurationService.put("username", username.getText());
+            }
+        });
+
+        publicKey.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                configurationService.put("publicKey", publicKey.getText());
+            }
+        });
+
     }
 
 
     @FXML
     protected void onButtonStart() {
-        textAreaLog.setText("");
-        ClientConnection connection = new ClientConnection(publicHost.getText(), username.getText(), password.getText(), remoteHost.getText(), mapOfPortsToForward);
+        ClientConnection connection = new ClientConnection(publicHost.getText(), username.getText(), password.getText(), publicKey.getText(), remoteHost.getText(), mapOfPortsToForward);
         clientTask = new ClientTask(connection);
+
+        progress.selectedProperty().bind(clientTask.runningProperty());
+        labelMessage.textProperty().bind(clientTask.messageProperty());
+
+        clientTask.setOnFailed(e -> {
+            log.warn("Failed.");
+            onButtonStop();
+        });
+
+        clientTask.setOnSucceeded(e -> {
+            log.warn("Succeeded.");
+            onButtonStop();
+        });
+
         new Thread(clientTask).start();
         btnStart.disableProperty().setValue(true);
         btnStop.disableProperty().setValue(false);
@@ -92,8 +147,10 @@ public class MainController {
 
 
     @FXML
-    protected void onStopButtonClick() {
+    protected void onButtonStop() {
         clientTask.cancel(true);
+        labelMessage.textProperty().unbind();
+        labelMessage.setText("");
         btnStart.disableProperty().setValue(false);
         btnStop.disableProperty().setValue(true);
     }
