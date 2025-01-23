@@ -5,6 +5,10 @@ import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.client.session.SessionFactory;
+import org.apache.sshd.common.channel.PtyChannelConfiguration;
+import org.apache.sshd.common.channel.PtyChannelConfigurationHolder;
+import org.apache.sshd.common.channel.PtyChannelConfigurationMutator;
 import org.apache.sshd.common.session.SessionHeartbeatController;
 import org.apache.sshd.common.util.net.SshdSocketAddress;
 import org.slf4j.Logger;
@@ -13,6 +17,8 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.time.Duration;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ClientTask extends Task<Boolean> {
@@ -28,36 +34,66 @@ public class ClientTask extends Task<Boolean> {
 
 
     @Override
-    public Boolean call() throws InterruptedException {
+    public Boolean call() throws IOException {
         updateMessage("Connecting ...");
-        SshClient sshClient = SshClient.setUpDefaultClient();
-        sshClient.start();
 
-        try (ClientSession session = sshClient.connect(clientConnection.username(), clientConnection.remoteHost(), 22).verify(5000).getSession()) {
-            session.addPasswordIdentity(clientConnection.password()); // for password-based authentication
-            session.auth().verify(5000);
+        try(SshClient sshClient = SshClient.setUpDefaultClient()) {
+            sshClient.setForwardingFilter(new org.apache.sshd.server.forward.AcceptAllForwardingFilter());
+            sshClient.setNioWorkers(10);
+            sshClient.start();
 
-            clientConnection.portForwards().forEach( (localPort, remotePort) -> {
-                try {
-                    SshdSocketAddress localSocket = new SshdSocketAddress("localhost", localPort);
-                    SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.privateHost(), remotePort);
-                    session.startLocalPortForwarding(localSocket, remoteSocket);
-                } catch (IOException e) {
-                    log.debug("Port forwarding {} to {} on {} - {}", localPort, clientConnection.privateHost(), remotePort, e.getMessage());
+            try (ClientSession session = sshClient.connect(clientConnection.username(), clientConnection.remoteHost(), 22).verify(5000).getSession()) {
+                session.addPasswordIdentity(clientConnection.password()); // for password-based authentication
+                session.auth().verify(2500);
+
+                clientConnection.portForwards().forEach( (localPort, remotePort) -> {
+                    try {
+                        log.info("Creating port forward for localhost:{} to {}:{}", localPort, clientConnection.privateHost(), remotePort);
+                        SshdSocketAddress localSocket = new SshdSocketAddress(localPort);
+                        SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.privateHost(), remotePort);
+                        session.startLocalPortForwarding(localSocket, remoteSocket);
+                    } catch (IOException e) {
+                        log.debug("Port forwarding {} to {} on {} - {}", localPort, clientConnection.privateHost(), remotePort, e.getMessage());
+                    }
+                });
+
+                /*
+                Map<String, ?> env = new HashMap<>();
+                PtyChannelConfiguration ptyConfig = new PtyChannelConfiguration();
+                ptyConfig.setPtyType(PtyChannelConfigurationHolder.DUMMY_PTY_TYPE);
+
+                // The same code can be used when opening a ChannelExec in order to run a single interactive command
+                try (ClientChannel channel = session.createShellChannel(ptyConfig, env)) {
+                    try {
+                        channel.open().verify(2500);
+
+                        channel.setErr(System.err);
+                        channel.setOut(System.out);
+                        //spawnStdinThread(channel.getInvertedIn());
+                        //spawnStdoutThread(channel.getInvertedOut());
+                        //spawnStderrThread(channel.getInvertedErr());
+
+                        // Wait (forever) for the channel to close - signalling shell exited
+                        channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 0L);
+                    } finally {
+                        // ... stop the pumping threads ...
+                    }
+                }*/
+
+                session.setSessionHeartbeat(SessionHeartbeatController.HeartbeatType.IGNORE, Duration.ofMinutes(1));
+                updateValue(true);
+                updateMessage("Connected.");
+
+                while(session.isOpen() && !isCancelled()) {
+                    Thread.sleep(500);
                 }
-            });
 
-            session.setSessionHeartbeat(SessionHeartbeatController.HeartbeatType.IGNORE, Duration.ofMinutes(1));
-            updateValue(true);
-            updateMessage("Connected.");
-
-            while(session.isOpen() && !isCancelled()) {
-                Thread.sleep(500);
+            } catch (Exception e) {
+                updateMessage(e.getMessage());
+            } finally {
+                sshClient.stop();
             }
 
-        } catch (Exception e) {
-            updateMessage(e.getMessage());
-            cancel();
         }
 
         updateMessage("");

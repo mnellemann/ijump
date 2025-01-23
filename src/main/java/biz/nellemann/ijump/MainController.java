@@ -71,6 +71,7 @@ public class MainController {
         mapOfPortsToForward.put(2010, 2010);
         mapOfPortsToForward.put(2222, 22);
         mapOfPortsToForward.put(2300, 2300);
+        mapOfPortsToForward.put(2301, 2301);
         mapOfPortsToForward.put(2323, 2323);
         mapOfPortsToForward.put(3001, 3001);
         mapOfPortsToForward.put(3002, 3002);

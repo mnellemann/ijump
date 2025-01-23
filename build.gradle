@@ -23,10 +23,11 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
+        vendor = JvmVendorSpec.BELLSOFT
     }
     modularity.inferModulePath.set(false)
 }
@@ -40,6 +41,8 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.13'
     implementation 'org.slf4j:slf4j-simple:2.0.13'
     implementation 'org.apache.sshd:sshd-core:2.14.0'
+    implementation 'org.apache.sshd:sshd-contrib:2.14.0'
+    implementation 'org.apache.sshd:sshd-netty:2.14.0'
     implementation 'io.github.mkpaz:atlantafx-base:2.0.1'
 }
 
