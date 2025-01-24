@@ -41,23 +41,28 @@
                     <Font name="System Bold" size="15.0"/>
                 </font>
             </Label>
+            <Label text="Run program with administrative privileges!">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+            </Label>
 
             <HBox alignment="CENTER_LEFT" spacing="5.0">
-                <Label minHeight="-Infinity" minWidth="125.0" text="Jump Server">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Public Host">
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
                 </Label>
-                <TextField fx:id="publicHost" prefWidth="200.0" promptText="Public host/IP"/>
+                <TextField fx:id="publicHost" prefWidth="200.0" promptText="IP or hostname of SSH target"/>
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="5.0">
-                <Label minHeight="-Infinity" minWidth="125.0" text="Internal Address">
+                <Label minHeight="-Infinity" minWidth="125.0" text="Internal Host">
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
                 </Label>
-                <TextField fx:id="remoteHost" prefWidth="200.0" promptText="Internal address of IBM i"/>
+                <TextField fx:id="internalHost" prefWidth="200.0" promptText="Tunnel internal IP or hostname"/>
             </HBox>
 
             <HBox alignment="CENTER_LEFT" spacing="5.0">
@@ -85,12 +90,12 @@
 
             <HBox alignment="CENTER_LEFT" layoutX="20.0" layoutY="151.0" spacing="5.0">
                 <Label alignment="TOP_LEFT" contentDisplay="CENTER" minHeight="-Infinity" minWidth="125.0"
-                       text="SSH Public Key">
+                       text="SSH Private Key">
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
                 </Label>
-                <TextArea fx:id="publicKey" prefHeight="200.0" prefWidth="200.0" promptText="Not working yet."/>
+                <TextArea fx:id="privateKey" prefHeight="200.0" prefWidth="200.0" promptText="Not working yet."/>
             </HBox>
             <opaqueInsets>
                 <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>

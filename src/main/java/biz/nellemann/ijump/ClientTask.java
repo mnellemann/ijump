@@ -2,23 +2,13 @@ package biz.nellemann.ijump;
 
 import javafx.concurrent.Task;
 import org.apache.sshd.client.SshClient;
-import org.apache.sshd.client.channel.ClientChannel;
-import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.client.session.SessionFactory;
-import org.apache.sshd.common.channel.PtyChannelConfiguration;
-import org.apache.sshd.common.channel.PtyChannelConfigurationHolder;
-import org.apache.sshd.common.channel.PtyChannelConfigurationMutator;
 import org.apache.sshd.common.session.SessionHeartbeatController;
 import org.apache.sshd.common.util.net.SshdSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
-import java.security.KeyPair;
 import java.time.Duration;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ClientTask extends Task<Boolean> {
@@ -42,18 +32,18 @@ public class ClientTask extends Task<Boolean> {
             sshClient.setNioWorkers(10);
             sshClient.start();
 
-            try (ClientSession session = sshClient.connect(clientConnection.username(), clientConnection.remoteHost(), 22).verify(5000).getSession()) {
+            try (ClientSession session = sshClient.connect(clientConnection.username(), clientConnection.publicHost(), 22).verify(5000).getSession()) {
                 session.addPasswordIdentity(clientConnection.password()); // for password-based authentication
                 session.auth().verify(2500);
 
                 clientConnection.portForwards().forEach( (localPort, remotePort) -> {
                     try {
-                        log.info("Creating port forward for localhost:{} to {}:{}", localPort, clientConnection.privateHost(), remotePort);
+                        log.info("Creating port forward for localhost:{} to {}:{}", localPort, clientConnection.internalHost(), remotePort);
                         SshdSocketAddress localSocket = new SshdSocketAddress(localPort);
-                        SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.privateHost(), remotePort);
+                        SshdSocketAddress remoteSocket = new SshdSocketAddress(clientConnection.internalHost(), remotePort);
                         session.startLocalPortForwarding(localSocket, remoteSocket);
                     } catch (IOException e) {
-                        log.debug("Port forwarding {} to {} on {} - {}", localPort, clientConnection.privateHost(), remotePort, e.getMessage());
+                        log.debug("Port forwarding {} to {} on {} - {}", localPort, clientConnection.internalHost(), remotePort, e.getMessage());
                     }
                 });
 

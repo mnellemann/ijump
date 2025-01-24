@@ -22,7 +22,7 @@ public class MainController {
     private TextField publicHost;
 
     @FXML
-    private TextField remoteHost;
+    private TextField internalHost;
 
     @FXML
     private TextField username;
@@ -31,7 +31,7 @@ public class MainController {
     private PasswordField password;
 
     @FXML
-    private TextArea publicKey;
+    private TextArea privateKey;
 
     @FXML
     private Button btnStart;
@@ -94,10 +94,10 @@ public class MainController {
 
 
         publicHost.setText(configurationService.get("publicHost", ""));
-        remoteHost.setText(configurationService.get("privateHost", ""));
+        internalHost.setText(configurationService.get("internalHost", "localhost"));
         username.setText(configurationService.get("username", ""));
         password.setText(configurationService.get("password", ""));
-        publicKey.setText(configurationService.get("publicKey", ""));
+        privateKey.setText(configurationService.get("privateKey", ""));
 
         publicHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -106,10 +106,10 @@ public class MainController {
             }
         });
 
-        remoteHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
+        internalHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("privateHost", remoteHost.getText());
+                configurationService.put("internalHost", internalHost.getText());
             }
         });
 
@@ -127,10 +127,10 @@ public class MainController {
             }
         });
 
-        publicKey.focusedProperty().addListener(new ChangeListener<Boolean>() {
+        privateKey.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("publicKey", publicKey.getText());
+                configurationService.put("privateKey", privateKey.getText());
             }
         });
 
@@ -140,7 +140,13 @@ public class MainController {
     @FXML
     protected void onButtonStart() {
         syslog.setText("");
-        ClientConnection connection = new ClientConnection(publicHost.getText(), username.getText(), password.getText(), publicKey.getText(), remoteHost.getText(), mapOfPortsToForward);
+        ClientConnection connection = new ClientConnection(
+                publicHost.getText(),
+                username.getText(),
+                password.getText(),
+                privateKey.getText(),
+                internalHost.getText(),
+                mapOfPortsToForward);
         clientTask = new ClientTask(connection);
 
         progress.selectedProperty().bind(clientTask.runningProperty());
