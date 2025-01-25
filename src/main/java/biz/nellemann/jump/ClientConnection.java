@@ -1,4 +1,4 @@
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import java.awt.Taskbar;
 import java.awt.Toolkit;
@@ -19,9 +19,7 @@ public class Main extends javafx.application.Application {
 
         // Make all stages close and the app exit when the primary stage is closed
         Platform.setImplicitExit(true);
-        primaryStage.setOnCloseRequest(e -> {
-            Platform.exit();
-        });
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
 
         // Set icon on the application bar
         var appIcon = new Image("/icon.png");
@@ -44,7 +42,7 @@ public class Main extends javafx.application.Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("main.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        primaryStage.setTitle("iJump - IBM i Cloud Connect");
+        primaryStage.setTitle("iJump - IBM i SSH Tunneling");
         primaryStage.setScene(scene);
         primaryStage.show();
 

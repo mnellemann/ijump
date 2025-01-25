@@ -1,19 +1,14 @@
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.scene.control.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javafx.fxml.FXML;
 
 
 public class MainController {
-
-    private final static Logger log = LoggerFactory.getLogger(MainController.class);
 
     ConfigurationService configurationService = new ConfigurationService();
 
@@ -68,11 +63,12 @@ public class MainController {
         mapOfPortsToForward.put(2001, 2001);
         mapOfPortsToForward.put(2002, 2002);
         mapOfPortsToForward.put(2003, 2003);
+        mapOfPortsToForward.put(2004, 2004);
         mapOfPortsToForward.put(2010, 2010);
         mapOfPortsToForward.put(2222, 22);
         mapOfPortsToForward.put(2300, 2300);
         mapOfPortsToForward.put(2301, 2301);
-        mapOfPortsToForward.put(2323, 2323);
+        mapOfPortsToForward.put(2323, 23);
         mapOfPortsToForward.put(3001, 3001);
         mapOfPortsToForward.put(3002, 3002);
         mapOfPortsToForward.put(4026, 4026);
@@ -90,8 +86,8 @@ public class MainController {
         mapOfPortsToForward.put(9474, 9474);
         mapOfPortsToForward.put(9475, 9475);
         mapOfPortsToForward.put(9476, 9476);
+        mapOfPortsToForward.put(8080, 80);
         mapOfPortsToForward.put(50000, 23);
-
 
         publicHost.setText(configurationService.get("publicHost", ""));
         internalHost.setText(configurationService.get("internalHost", "localhost"));
@@ -99,40 +95,11 @@ public class MainController {
         password.setText(configurationService.get("password", ""));
         privateKey.setText(configurationService.get("privateKey", ""));
 
-        publicHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("publicHost", publicHost.getText());
-            }
-        });
-
-        internalHost.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("internalHost", internalHost.getText());
-            }
-        });
-
-        username.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("username", username.getText());
-            }
-        });
-
-        password.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("password", password.getText());
-            }
-        });
-
-        privateKey.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                configurationService.put("privateKey", privateKey.getText());
-            }
-        });
+        publicHost.focusedProperty().addListener((observable, oldValue, newValue) -> configurationService.put("publicHost", publicHost.getText()));
+        internalHost.focusedProperty().addListener((observable, oldValue, newValue) -> configurationService.put("internalHost", internalHost.getText()));
+        username.focusedProperty().addListener((observable, oldValue, newValue) -> configurationService.put("username", username.getText()));
+        password.focusedProperty().addListener((observable, oldValue, newValue) -> configurationService.put("password", password.getText()));
+        privateKey.focusedProperty().addListener((observable, oldValue, newValue) -> configurationService.put("privateKey", privateKey.getText()));
 
     }
 

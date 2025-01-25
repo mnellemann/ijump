@@ -1,4 +1,4 @@
-module biz.nellemann.ijump {
+module biz.nellemann.jump {
     requires java.desktop;
     requires org.slf4j;
     requires org.slf4j.simple;
@@ -9,6 +9,6 @@ module biz.nellemann.ijump {
     requires javafx.fxml;
     requires org.apache.sshd.core;
 
-    opens biz.nellemann.ijump to javafx.fxml;
-    exports biz.nellemann.ijump;
+    opens biz.nellemann.jump to javafx.fxml;
+    exports biz.nellemann.jump;
 }

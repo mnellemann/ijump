@@ -18,15 +18,15 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 application {
-    mainModule = 'biz.nellemann.ijump'
-    mainClass = 'biz.nellemann.ijump.Main'
+    mainModule = 'biz.nellemann.jump'
+    mainClass = 'biz.nellemann.jump.Main'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
         vendor = JvmVendorSpec.BELLSOFT
     }
     modularity.inferModulePath.set(false)
@@ -41,8 +41,6 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.13'
     implementation 'org.slf4j:slf4j-simple:2.0.13'
     implementation 'org.apache.sshd:sshd-core:2.14.0'
-    implementation 'org.apache.sshd:sshd-contrib:2.14.0'
-    implementation 'org.apache.sshd:sshd-netty:2.14.0'
     implementation 'io.github.mkpaz:atlantafx-base:2.0.1'
 }
 
@@ -81,7 +79,7 @@ runtime {
         installerName = "iJump-${osdetector.arch}"
         installerOptions += [
             '--vendor', 'Nellemann Data',
-            '--description', 'IBM i SSH Tunneling Through Jump Host',
+            '--description', 'IBM i SSH Tunneling',
             '--copyright', 'Mark Nellemann <mark.nellemann@gmail.com>',
             '--app-version', project.findProperty('version'),
         ]

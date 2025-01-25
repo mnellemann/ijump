@@ -1,5 +1,5 @@
 
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import java.io.OutputStream;
 

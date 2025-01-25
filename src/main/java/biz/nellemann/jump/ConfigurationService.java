@@ -1,4 +1,4 @@
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

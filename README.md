@@ -1,2 +1,3 @@
-# SSH Tunnel for IBM i in IBM Cloud
+# IBM i SSH Tunneling
 
+Made easy.

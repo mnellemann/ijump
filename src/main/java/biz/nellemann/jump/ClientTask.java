@@ -1,4 +1,4 @@
-package biz.nellemann.ijump;
+package biz.nellemann.jump;
 
 import javafx.concurrent.Task;
 import org.apache.sshd.client.SshClient;
@@ -29,7 +29,6 @@ public class ClientTask extends Task<Boolean> {
 
         try(SshClient sshClient = SshClient.setUpDefaultClient()) {
             sshClient.setForwardingFilter(new org.apache.sshd.server.forward.AcceptAllForwardingFilter());
-            sshClient.setNioWorkers(10);
             sshClient.start();
 
             try (ClientSession session = sshClient.connect(clientConnection.username(), clientConnection.publicHost(), 22).verify(5000).getSession()) {
@@ -80,6 +79,7 @@ public class ClientTask extends Task<Boolean> {
 
             } catch (Exception e) {
                 updateMessage(e.getMessage());
+                return null;
             } finally {
                 sshClient.stop();
             }
