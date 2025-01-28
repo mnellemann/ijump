@@ -20,6 +20,7 @@ public class MyCustomAppender extends OutputStream {
     public void write(int b) {
         Platform.runLater( () -> {
             textArea.appendText(String.valueOf((char) b));
+            textArea.positionCaret(textArea.getLength());
         });
     }
 
