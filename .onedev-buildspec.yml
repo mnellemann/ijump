@@ -16,8 +16,9 @@ jobs:
   - !TagCreateTrigger
     branches: main
   jobDependencies:
-  - jobName: Test JavaFX App
+  - jobName: Build JavaFX App - Linux
     requireSuccessful: true
+    artifacts: '**'
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
